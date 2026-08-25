@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masiel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#F6F4F9;
+    --surface:#FFFFFF;
+    --surface-2:#EFEAF7;
+    --text:#241B2E;
+    --text-muted:#6B5F78;
+    --accent:#7C3AED;
+    --accent-soft:#ECE1FB;
+    --warm:#C026D3;
+    --warm-soft:#FBE4FA;
+    --line:#E1D9EC;
+    --shadow: 0 1px 2px rgba(60,20,90,0.06), 0 6px 16px rgba(60,20,90,0.06);
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#17121D;
+      --surface:#201A29;
+      --surface-2:#271F32;
+      --text:#ECE7F2;
+      --text-muted:#A99BB8;
+      --accent:#A78BFA;
+      --accent-soft:#2E2140;
+      --warm:#E879F9;
+      --warm-soft:#3A2038;
+      --line:#322942;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#17121D;
+    --surface:#201A29;
+    --surface-2:#271F32;
+    --text:#ECE7F2;
+    --text-muted:#A99BB8;
+    --accent:#A78BFA;
+    --accent-soft:#2E2140;
+    --warm:#E879F9;
+    --warm-soft:#3A2038;
+    --line:#322942;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:860px;
+    margin:0 auto;
+    padding:28px 20px 80px;
+  }
+  a{color:inherit;}
+  ::selection{ background:var(--accent-soft); }
+
+  .top{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px 20px;
+    margin-bottom:6px;
+  }
+  .plan-title{
+    font-family:"Big Shoulders Display", sans-serif;
+    font-weight:800;
+    font-size:2.6rem;
+    line-height:0.95;
+    letter-spacing:0.2px;
+    text-wrap:balance;
+    margin:0;
+  }
+  .plan-title .accent, .plan-title.accent{ color:var(--accent); }
+  .bio{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:0.82rem;
+    color:var(--text-muted);
+  }
+  .bio b{ color:var(--text); font-weight:600; }
+
+  .subhead{
+    color:var(--text-muted);
+    font-size:0.95rem;
+    margin:6px 0 18px;
+    max-width:60ch;
+  }
+
+  .objective-card{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    background:linear-gradient(135deg, var(--accent-soft), var(--surface));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px 18px;
+    margin-bottom:22px;
+    box-shadow:var(--shadow);
+  }
+  .objective-label{
+    font-family:"Big Shoulders Display", sans-serif;
+    font-weight:700;
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--accent);
+    flex-shrink:0;
+  }
+  .objective-text{
+    font-size:0.92rem;
+    flex:1;
+    min-width:200px;
+  }
+  .objective-duration{
+    font-size:0.82rem;
+    color:var(--text-muted);
+    white-space:nowrap;
+  }
+  .objective-duration .stat-num{
+    font-family:"IBM Plex Mono", monospace;
+    font-weight:600;
+    color:var(--accent);
+    font-size:1rem;
+  }
+
+  .footer{
+    margin-top:40px;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    text-align:center;
+    font-size:0.78rem;
+    color:var(--text-muted);
+    letter-spacing:0.02em;
+  }
+  .footer b{ color:var(--text); font-weight:600; }
+
+  /* Tabs */
+  .tabs{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    margin-bottom:22px;
+    border-bottom:1px solid var(--line);
+    scrollbar-width:thin;
+  }
+  .tab-btn{
+    appearance:none;
+    border:none;
+    background:transparent;
+    color:var(--text-muted);
+    font-family:"IBM Plex Sans", sans-serif;
+    font-weight:600;
+    font-size:0.86rem;
+    padding:9px 14px;
+    border-radius:10px 10px 0 0;
+    cursor:pointer;
+    white-space:nowrap;
+    position:relative;
+    transition:color .15s ease, background .15s ease;
+  }
+  .tab-btn:hover{ color:var(--text); background:var(--surface-2); }
+  .tab-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .tab-btn[aria-selected="true"]{
+    color:var(--text);
+    background:var(--surface);
+  }
+  .tab-btn[aria-selected="true"]::after{
+    content:"";
+    position:absolute;
+    left:8px; right:8px; bottom:-1px;
+    height:3px;
+    border-radius:3px;
+    background:var(--accent);
+  }
+  .tab-emoji{ margin-right:6px; font-size:0.9em; }
+
+  .panel{ display:none; animation:fade .25s ease; }
+  .panel.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:none;} }
+
+  /* Progress */
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .progress-track{
+    flex:1;
+    height:8px;
+    border-radius:6px;
+    background:var(--surface-2);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--accent);
+    border-radius:6px;
+    transition:width .25s ease;
+  }
+  .progress-label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.78rem;
+    color:var(--text-muted);
+    white-space:nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Nutrition meal cards */
+  .meal{
+    display:grid;
+    grid-template-columns:64px 1fr;
+    gap:14px;
+    padding:14px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .meal:last-of-type{ border-bottom:none; }
+  .meal-time{
+    font-family:"IBM Plex Mono", monospace;
+    font-weight:600;
+    font-size:0.82rem;
+    color:var(--accent);
+    padding-top:2px;
+  }
+  .meal-body label{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    cursor:pointer;
+  }
+  .meal-food{
+    font-size:0.95rem;
+    line-height:1.45;
+  }
+  .meal-food.done{ color:var(--text-muted); text-decoration:line-through; text-decoration-color:var(--line); }
+  .meal-tags{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:8px;
+  }
+  .chip{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.72rem;
+    font-variant-numeric: tabular-nums;
+    padding:3px 9px;
+    border-radius:999px;
+    background:var(--surface-2);
+    color:var(--text-muted);
+    white-space:nowrap;
+  }
+  .chip.kcal{ background:var(--warm-soft); color:var(--warm); font-weight:600; }
+  .chip.water{ background:var(--accent-soft); color:var(--accent); font-weight:600; }
+  input[type="checkbox"]{
+    appearance:none;
+    width:19px; height:19px;
+    min-width:19px;
+    border-radius:6px;
+    border:1.5px solid var(--line);
+    background:var(--surface);
+    cursor:pointer;
+    position:relative;
+    margin-top:2px;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  input[type="checkbox"]:checked{ background:var(--accent); border-color:var(--accent); }
+  input[type="checkbox"]:checked::after{
+    content:"";
+    position:absolute;
+    left:5px; top:1px;
+    width:5px; height:10px;
+    border:solid white;
+    border-width:0 2px 2px 0;
+    transform:rotate(45deg);
+  }
+  input[type="checkbox"]:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .totals-card{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:20px;
+    box-shadow:var(--shadow);
+  }
+  .totals-card .tot{
+    flex:1;
+    min-width:110px;
+  }
+  .totals-card .tot .n{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:1.3rem;
+    font-weight:600;
+    font-variant-numeric: tabular-nums;
+  }
+  .totals-card .tot .l{
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--text-muted);
+  }
+
+  .section-title{
+    font-family:"Big Shoulders Display", sans-serif;
+    font-weight:700;
+    font-size:1.05rem;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    color:var(--text-muted);
+    margin:26px 0 10px;
+  }
+  .section-title:first-of-type{ margin-top:4px; }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+
+  .ex-row{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .ex-row:last-child{ border-bottom:none; }
+  .ex-row label{ display:flex; align-items:center; gap:10px; cursor:pointer; min-width:0; }
+  .ex-badge{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.7rem;
+    font-weight:600;
+    color:var(--text-muted);
+    background:var(--surface-2);
+    border-radius:6px;
+    padding:2px 6px;
+    min-width:20px;
+    text-align:center;
+    flex-shrink:0;
+  }
+  .ex-name{
+    font-size:0.92rem;
+    min-width:0;
+    overflow-wrap:break-word;
+  }
+  .ex-name.done{ color:var(--text-muted); text-decoration:line-through; text-decoration-color:var(--line); }
+  .ex-stats{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+  .stat{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:0.74rem;
+    font-variant-numeric: tabular-nums;
+    padding:3px 8px;
+    border-radius:999px;
+    background:var(--surface-2);
+    color:var(--text-muted);
+    white-space:nowrap;
+  }
+  .stat.reps{ background:var(--accent-soft); color:var(--accent); font-weight:600; }
+
+  .note{
+    font-size:0.82rem;
+    color:var(--text-muted);
+    line-height:1.5;
+    margin:18px 0 0;
+    padding:12px 14px;
+    background:var(--surface-2);
+    border-radius:10px;
+  }
+
+  .legend{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    font-size:0.76rem;
+    color:var(--text-muted);
+    margin-bottom:18px;
+  }
+  .legend span b{ color:var(--text); }
+
+  @media (max-width:520px){
+    .plan-title{ font-size:2rem; }
+    .ex-row{ grid-template-columns:1fr; }
+    .ex-stats{ justify-content:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+  <div class="top">
+    <h1 class="plan-title accent">Masiel</h1>
+    <div class="bio"><span><b>Edad</b> 36</span><span><b>Peso</b> 89 kg</span><span><b>GEB</b> 1850 kcal</span></div>
+  </div>
+  <p class="subhead">Nutrición diaria y rutina de entrenamiento — semana 1. Marca comidas y ejercicios conforme los completes.</p>
+
+  <div class="objective-card">
+    <div class="objective-label">Objetivo</div>
+    <div class="objective-text">Cambio de composición corporal y de hábitos alimenticios.</div>
+    <div class="objective-duration"><span class="stat-num">8</span> semanas de duración</div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Secciones del plan">
+    <button class="tab-btn" role="tab" data-tab="nutricion" aria-selected="true"><span class="tab-emoji">🥗</span>Nutrición</button>
+    <button class="tab-btn" role="tab" data-tab="gluteo" aria-selected="false"><span class="tab-emoji">🦵</span>Glúteo &amp; Isquios</button>
+    <button class="tab-btn" role="tab" data-tab="hombro" aria-selected="false"><span class="tab-emoji">🏋️</span>Hombro &amp; Tríceps</button>
+    <button class="tab-btn" role="tab" data-tab="cuadriceps" aria-selected="false"><span class="tab-emoji">🔥</span>Cuádriceps</button>
+    <button class="tab-btn" role="tab" data-tab="espalda" aria-selected="false"><span class="tab-emoji">🎯</span>Espalda &amp; Bíceps</button>
+    <button class="tab-btn" role="tab" data-tab="pecho" aria-selected="false"><span class="tab-emoji">💪</span>Pecho</button>
+  </div>
+
+  <!-- NUTRICION -->
+  <section class="panel active" id="panel-nutricion">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" data-fill="nutricion"></div></div>
+      <div class="progress-label" data-label="nutricion">0/6 comidas</div>
+    </div>
+
+    <div class="totals-card">
+      <div class="tot"><div class="n">1680</div><div class="l">Kcal / día</div></div>
+      <div class="tot"><div class="n">2000 ml</div><div class="l">Agua / día</div></div>
+      <div class="tot"><div class="n">6</div><div class="l">Comidas</div></div>
+    </div>
+
+    <div class="card" id="meal-list"></div>
+
+    <p class="note">Suplementación general del día: vitamina E 400u, vitamina C 500mg, triple omega (2 cáps), creatina 5g, resveratrol — según el horario indicado en cada comida.</p>
+  </section>
+
+  <!-- TRAINING PANELS: generated by JS from data -->
+  <section class="panel" id="panel-gluteo"></section>
+  <section class="panel" id="panel-hombro"></section>
+  <section class="panel" id="panel-cuadriceps"></section>
+  <section class="panel" id="panel-espalda"></section>
+  <section class="panel" id="panel-pecho"></section>
+
+  <footer class="footer">Head Coach: <b>Leonardo Pablo</b></footer>
+
+</div>
+
+<script>
+(function(){
+
+  var meals = [
+    { time:"Al despertar", food:"1 taza de papaya con 2 cucharadas de yogurt natural o griego y 2 cucharadas de avena. Café libre.", kcal:210, water:"250 ml", supp:"Vitamina E 400u · Vitamina C 500mg" },
+    { time:"10:00", food:"3 huevos al gusto, 1½ tortilla y 1½ taza de verduras asadas o al vapor (nopal, ejote, jícama, chayote, calabaza).", kcal:375, water:"250 ml", supp:"Triple omega (2 cáps) · Creatina 5g" },
+    { time:"13:00", food:"150 g de pollo cocido con 1 taza de chayotes y 1 taza de papas cocidas.", kcal:410, water:"500 ml", supp:null },
+    { time:"15:00–16:00", food:"100 g de pescado asado o 2 sobres de atún, con una pieza de pepino y una manzana.", kcal:245, water:"250 ml", supp:null },
+    { time:"19:00", food:"1 pan tostado con crema de avellana sin azúcar y 4 fresas o medio plátano.", kcal:210, water:"250 ml", supp:null },
+    { time:"22:00", food:"2 nopales asados con 90 g de carne molida o pollo cocido (estilo sope de nopal), 2 gelatinas sin azúcar y té libre sin endulzar.", kcal:230, water:"500 ml", supp:"Resveratrol" }
+  ];
+
+  var mealListEl = document.getElementById("meal-list");
+  meals.forEach(function(m, i){
+    var el = document.createElement("div");
+    el.className = "meal";
+    el.innerHTML =
+      '<div class="meal-time">'+m.time+'</div>'+
+      '<div class="meal-body">'+
+        '<label>'+
+          '<input type="checkbox" data-group="nutricion" id="meal-'+i+'">'+
+          '<span>'+
+            '<span class="meal-food" id="meal-food-'+i+'">'+m.food+'</span>'+
+            '<span class="meal-tags">'+
+              '<span class="chip kcal">'+m.kcal+' kcal</span>'+
+              '<span class="chip water">'+m.water+'</span>'+
+              (m.supp ? '<span class="chip">'+m.supp+'</span>' : '')+
+            '</span>'+
+          '</span>'+
+        '</label>'+
+      '</div>';
+    mealListEl.appendChild(el);
+  });
+
+  // Training data — semana 1 (primera semana del ciclo) únicamente.
+  // groups: "warmup" (activación), "main" (principal), "extra" (complementarios)
+  function ex(letter, name, series, reps, tempo, rir, rest){
+    return { letter:letter, name:name, series:series, reps:reps, tempo:tempo, rir:rir, rest:rest };
+  }
+
+  var days = {
+    gluteo: {
+      title: "Glúteo & Isquiotibiales",
+      warmup: [
+        ex("A","Hip thrust en máquina, una pierna","4","12","3-0-1","0","1 min"),
+        ex("A","Patada de glúteo en máquina","4","15","2-0-2","0","1 min"),
+        ex("A","Abductor","4","12","2-0-2","0","1 min")
+      ],
+      main: [
+        ex("C","Sentadilla trasera (back squat)","4","15","3-0-1","3","1:20 min"),
+        ex("D","Búlgara con mancuerna","4","15","3-0-1","3","1:20 min"),
+        ex("D","Elevación posterior","3","15","1-0-1","3","0:40 min"),
+        ex("E","Prensa de pierna (up leg press)","3","15","3-0-1","2","—"),
+        ex("F","Sit leg curl","3","12","1-0-1","2","—"),
+        ex("F","Leg curl","3","12","2-0-2","2","—")
+      ],
+      extra: [
+        ex("H","Elevación de talones sentado","4","20","—","—","—"),
+        ex("H","Elevación de talones de pie","4","20","—","—","—")
+      ]
+    },
+    hombro: {
+      title: "Hombro & Tríceps",
+      warmup: [
+        ex("A","Hip thrust en máquina, una pierna","4","12","3-0-1","0","1 min"),
+        ex("A","Patada de glúteo en máquina","4","15","2-0-2","0","1 min"),
+        ex("A","Abductor","4","12","2-0-2","0","1 min")
+      ],
+      main: [
+        ex("B","Press de hombro con mancuernas","4","10","3-0-1","2","1 min"),
+        ex("C","Press Arnold","4","12","2-0-2","2","1 min"),
+        ex("D","Elevación frontal en polea (cruzada)","4","15","2-0-2","1","1 min"),
+        ex("D","Elevación lateral 45º","4","15","3-0-1","1","1 min"),
+        ex("E","Extensión de codo en polea","4","12","3-0-1","—","1 min")
+      ],
+      extra: [
+        ex("F","Fondos en máquina (dips)","4","18","2-0-2","2","1 min"),
+        ex("F","Press francés","4","18","2-0-2","2","1 min")
+      ]
+    },
+    cuadriceps: {
+      title: "Cuádriceps",
+      warmup: [
+        ex("A","Hip thrust en máquina, una pierna","4","12","1-0-1","2","0:40 min"),
+        ex("A","Patada de glúteo en máquina","4","15","2-0-2","2","0:40 min"),
+        ex("A","Abductor","4","12","1-0-1","3","0:40 min")
+      ],
+      main: [
+        ex("B","Zancadas con mancuernas","2","15","1-0-1","2","1 min"),
+        ex("B","Aductor","2","20","1-0-1","2","1 min"),
+        ex("C","Sentadilla trasera (back squat)","4","12","1-0-1","1","1 min"),
+        ex("G","Búlgara","4","12","1-0-1","3","1 min"),
+        ex("H","Prensa de pierna, al centro","2","10","2-0-1","—","1 min"),
+        ex("H","Prensa de pierna, cerrado abajo","2","10","2-0-2","—","1 min"),
+        ex("J","Extensión de pierna","2","12","1-0-1","2","1 min"),
+        ex("J","Extensión de pierna, rango largo","2","12","1-0-1","2","1 min")
+      ],
+      extra: [
+        ex("K","Costurera","4","15","1-0-1","2","1 min"),
+        ex("K","Elevación de talones en prensa","4","21","1-0-1","2","1 min")
+      ]
+    },
+    espalda: {
+      title: "Espalda & Bíceps",
+      warmup: [
+        ex("A","Hip thrust en máquina, una pierna","4","12","1-0-1","2","0:40 min"),
+        ex("A","Patada de glúteo en máquina","4","15","2-0-2","2","0:40 min"),
+        ex("A","Abductor","4","12","1-0-1","3","0:40 min")
+      ],
+      main: [
+        ex("B","Dominadas (pull ups)","2","6","2-0-1","1","1 min"),
+        ex("B","Dominadas supinas (chin ups)","2","6","3-0-1","2","1 min"),
+        ex("B","Dominadas agarre neutro","2","6","3-0-3","1","1 min"),
+        ex("C","Jalón al pecho, media rodilla","4","12","3-0-1","1","1 min"),
+        ex("D","Pull over con mancuerna","4","15","2-0-1","2","1 min"),
+        ex("F","Remo Yates","3","12","1-0-1","3","1 min"),
+        ex("I","Remo invertido","3","18","1-0-1","1","1 min"),
+        ex("J","Curl en polea a un brazo","4","12","2-0-2","2","1 min"),
+        ex("J","Curl alterno con mancuerna","4","12","1-0-1","—","0:40 min"),
+        ex("J","Curl en banco inclinado, barra Z","4","15","1-0-1","—","0:40 min")
+      ],
+      extra: [
+        ex("J","Sit ups","4","20","1-0-1","—","—"),
+        ex("J","Crunch","4","20","1-0-1","—","—")
+      ]
+    },
+    pecho: {
+      title: "Pecho",
+      warmup: [
+        ex("A","Hip thrust en máquina, una pierna","4","12","1-0-1","2","0:40 min"),
+        ex("A","Patada de glúteo en máquina","4","15","2-0-2","2","0:40 min"),
+        ex("A","Abductor","4","12","1-0-1","3","0:40 min")
+      ],
+      main: [
+        ex("—","Pull over","3","15","1-0-1","2","1 min"),
+        ex("—","Fondos (dips)","3","15","1-0-1","2","1 min"),
+        ex("—","Press de banca","3","12","1-0-1","1","1 min"),
+        ex("—","Press de banca inclinado","3","12","2-0-2","2","1 min"),
+        ex("—","Cruce en polea, declinado","4","20","2-0-2","—","1 min"),
+        ex("—","Press en polea (cable press around)","3","20","1-0-1","1","1 min"),
+        ex("—","Cruce de pie (cross over)","3","12","1-0-1","1","1 min")
+      ],
+      extra: [
+        ex("—","Sit ups","4","20","—","—","—"),
+        ex("—","Crunch","4","20","—","—","—")
+      ]
+    }
+  };
+
+  var sectionLabels = { warmup:"Activación", main:"Ejercicios principales", extra:"Complementarios" };
+
+  function renderDay(key, day){
+    var panel = document.getElementById("panel-"+key);
+    var totalCount = day.warmup.length + day.main.length + day.extra.length;
+    var html = '';
+    html += '<div class="progress-row">'+
+      '<div class="progress-track"><div class="progress-fill" data-fill="'+key+'"></div></div>'+
+      '<div class="progress-label" data-label="'+key+'">0/'+totalCount+' ejercicios</div>'+
+    '</div>';
+    html += '<div class="legend"><span><b>S x R</b> series × repeticiones</span><span><b>Tempo</b> excéntrico-pausa-concéntrico</span><span><b>RIR</b> reps en reserva</span><span><b>Desc.</b> descanso entre series</span></div>';
+
+    ["warmup","main","extra"].forEach(function(sec){
+      var list = day[sec];
+      if(!list.length) return;
+      html += '<div class="section-title">'+sectionLabels[sec]+'</div><div class="card">';
+      list.forEach(function(e, i){
+        var id = key+"-"+sec+"-"+i;
+        html += '<div class="ex-row">'+
+          '<label>'+
+            (e.letter && e.letter !== "—" ? '<span class="ex-badge">'+e.letter+'</span>' : '') +
+            '<input type="checkbox" data-group="'+key+'" id="'+id+'">'+
+            '<span class="ex-name" id="name-'+id+'">'+e.name+'</span>'+
+          '</label>'+
+          '<div class="ex-stats">'+
+            '<span class="stat reps">'+e.series+' × '+e.reps+'</span>'+
+            (e.tempo && e.tempo !== "—" ? '<span class="stat">Tempo '+e.tempo+'</span>' : '')+
+            (e.rir && e.rir !== "—" ? '<span class="stat">RIR '+e.rir+'</span>' : '')+
+            (e.rest && e.rest !== "—" ? '<span class="stat">'+e.rest+'</span>' : '')+
+          '</div>'+
+        '</div>';
+      });
+      html += '</div>';
+    });
+
+    html += '<p class="note">Rutina de la semana 1. El resto de las semanas del mes ajusta series, repeticiones e intensidad progresivamente — consulta con quien te asignó el plan si necesitas esas cargas.</p>';
+
+    panel.innerHTML = html;
+  }
+
+  Object.keys(days).forEach(function(key){ renderDay(key, days[key]); });
+
+  // ---- Tabs ----
+  var tabButtons = document.querySelectorAll(".tab-btn");
+  var panels = document.querySelectorAll(".panel");
+  tabButtons.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      tabButtons.forEach(function(b){ b.setAttribute("aria-selected","false"); });
+      panels.forEach(function(p){ p.classList.remove("active"); });
+      btn.setAttribute("aria-selected","true");
+      document.getElementById("panel-"+btn.dataset.tab).classList.add("active");
+    });
+  });
+
+  // ---- Checkbox state (per-viewer, local only) + progress bars ----
+  var STORAGE_KEY = "plan-masiel-progress-v1";
+  var state = {};
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = JSON.parse(raw) || {};
+  } catch(e){ state = {}; }
+
+  function saveState(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+  }
+
+  function updateProgress(group){
+    var boxes = document.querySelectorAll('input[type="checkbox"][data-group="'+group+'"]');
+    var total = boxes.length, done = 0;
+    boxes.forEach(function(b){ if(b.checked) done++; });
+    var fill = document.querySelector('.progress-fill[data-fill="'+group+'"]');
+    var label = document.querySelector('.progress-label[data-label="'+group+'"]');
+    if(fill) fill.style.width = (total ? (done/total*100) : 0) + "%";
+    if(label) label.textContent = done + "/" + total + (group === "nutricion" ? " comidas" : " ejercicios");
+  }
+
+  function wireCheckbox(box){
+    var key = box.id;
+    if(state[key]) box.checked = true;
+    var target = document.getElementById("name-"+key) || document.getElementById("meal-food-"+key.replace("meal-",""));
+    // meal checkboxes use id meal-N, target text is meal-food-N
+    if(box.id.indexOf("meal-") === 0){
+      target = document.getElementById("meal-food-"+box.id.split("-")[1]);
+    }
+    function applyStrike(){
+      if(target) target.classList.toggle("done", box.checked);
+    }
+    applyStrike();
+    box.addEventListener("change", function(){
+      state[key] = box.checked;
+      saveState();
+      applyStrike();
+      updateProgress(box.dataset.group);
+    });
+  }
+
+  document.querySelectorAll('input[type="checkbox"][data-group]').forEach(wireCheckbox);
+  ["nutricion","gluteo","hombro","cuadriceps","espalda","pecho"].forEach(updateProgress);
+
+})();
+</script>
+
+</body>
+</html>
